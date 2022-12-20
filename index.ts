@@ -222,3 +222,48 @@ const parse = (json: string): Json => {
   }
   return result.value;
 };
+
+
+const typeOf = (any) => Object.prototype.toString.call(any).slice(8, -1).toLowerCase();
+
+const stringify = (any, replacer, space = 0, layer = 0) => {
+  const type = typeOf(any);
+  const depth = layer + 1;
+  const padding = space ? `\n${' '.repeat(space * depth)}` : '';
+  const closing = space ? `\n${' '.repeat(space * (depth - 1))}` : '';
+
+  if (type === 'null') {
+    return 'null';
+  }
+
+  if (type === 'undefined') {
+    return depth === 1 ? undefined : 'null';
+  }
+
+  if (type === 'array') {
+    if (any.length === 0) return '[]';
+    return `[${any
+      .map((item) => `${padding}${stringify(item, replacer, space, depth)}`)
+      .join(',')}${closing}]`;
+  }
+
+  if (type === 'object') {
+    const keyPair = Object.entries(any).reduce((acc, [key, value]) => {
+      if (typeOf(value) === 'undefined') return acc;
+
+      const val = stringify(value, replacer, space, depth);
+      const base = `"${key}":${space ? ' ' : ''}${val}`;
+      return [...acc, padding + base];
+    }, []);
+
+    if (keyPair.length === 0) return '{}';
+
+    return `{${keyPair.join(',')}${closing}}`;
+  }
+
+  if (type === 'string') {
+    return `"${any}"`;
+  }
+
+  return any;
+};
