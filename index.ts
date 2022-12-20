@@ -214,3 +214,11 @@ const parseJSONString = (json: string): ParserResult | never => {
 
   throw new Error('Invalid JSON string');
 };
+
+const parse = (json: string): Json => {
+  const result = parseJSONString(json);
+  if (trimHead(result.json).length > 0) {
+    throw new Error('Invalid JSON string');
+  }
+  return result.value;
+};
