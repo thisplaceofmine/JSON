@@ -216,7 +216,7 @@ const parseJSONString = (json: string): ParserResult | never => {
 };
 
 const parse = (json: string): Json => {
-  const result = parseJSONString(json);
+  const result = parseJSONString(json.normalize('NFC'));
   if (trimHead(result.json).length > 0) {
     throw new Error('Invalid JSON string');
   }
